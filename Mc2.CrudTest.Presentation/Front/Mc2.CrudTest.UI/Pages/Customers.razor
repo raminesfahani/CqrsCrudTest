@@ -1,0 +1,75 @@
+﻿@page "/customers"
+@using Mc2.CrudTest.Application.DTOs.Customer
+@using Mc2.CrudTest.UI.Services
+@inject CustomerService customerService
+@using System.Text.Json
+@using Newtonsoft.Json
+
+<h1>Customers Management</h1>
+<br />
+<div class="toolbar">
+    <a href="/add-customers" type="button" class="btn btn-primary float-right">
+        Add Customer
+    </a>
+    <div style="clear:both">
+        <br />
+    </div>
+</div>
+
+@if (customers == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Bank Account Number</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var customer in customers)
+            {
+                <tr>
+                    <td>@customer.Id</td>
+                    <td>@customer.Firstname</td>
+                    <td>@customer.Lastname</td>
+                    <td>@customer.Email</td>
+                    <td>@customer.PhoneNumber</td>
+                    <td>@customer.BankAccountNumber</td>
+                    <td>
+                        <button @onclick="(() => DeleteCustomer(customer.Id))" class="btn btn-danger">Remove</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<CustomerDto> customers;
+
+    private async Task GetCustomers()
+    {
+        var result = await customerService.GetCustomers();
+        customers = result.Result;
+
+        this.StateHasChanged();
+    }
+    private async void DeleteCustomer(int id)
+    {
+        await customerService.DeleteCustomer(id);
+        await GetCustomers();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await GetCustomers();
+    }
+}

@@ -1,0 +1,23 @@
+version: '3.4'
+
+services:
+  mc2.crudtest.api:
+    image: ${DOCKER_REGISTRY-}mc2crudtestapi
+    build:
+      context: .
+      dockerfile: Mc2.CrudTest.Presentation/Server/Dockerfile
+    ports:
+        #- "5000:80"
+        - "44388:443"
+    depends_on:
+        - db
+  db:
+    image: mcr.microsoft.com/mssql/server
+    volumes:
+       - /var/opt/mssql
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Pa55w0rd2022"
+    ports:
+      - "1433:1433"
+

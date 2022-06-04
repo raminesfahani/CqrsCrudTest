@@ -1,0 +1,91 @@
+﻿@page "/add-customers"
+@using Mc2.CrudTest.Application.DTOs.Customer
+@using Mc2.CrudTest.Application.Responses
+@using Mc2.CrudTest.UI.Services
+@inject CustomerService customerService
+@inject NavigationManager NavigationManager
+
+<h1>Add Customer</h1>
+<br />
+<form @onsubmit="(() => AddCustomer())">
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <td>First Name</td>
+                <td>
+                    <input class="form-control" @bind="customer.Firstname" type="text" required />
+                </td>
+            </tr>
+            <tr>
+                <td>Last Name</td>
+                <td>
+                    <input class="form-control" @bind="customer.Lastname" type="text" required />
+                </td>
+            </tr>
+            <tr>
+                <td>Email</td>
+                <td>
+                    <input class="form-control" @bind="customer.Email" type="email" required />
+                </td>
+            </tr>
+            <tr>
+                <td>Phone Number</td>
+                <td>
+                    <input class="form-control" @bind="customer.PhoneNumber" type="tel" required />
+                </td>
+
+            </tr>
+            <tr>
+                <td>Birthdate</td>
+                <td>
+                    <input class="form-control" @bind="customer.DateOfBirth" type="date" required />
+                </td>
+            </tr>
+            <tr>
+                <td>Bank Account Number</td>
+                <td>
+                    <input class="form-control" @bind="customer.BankAccountNumber" type="text" />
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </div>
+
+    @if (response != null)
+    {
+        <div class="alert alert-danger mt-5" hidden="@(response.Errors.Count == 0)">
+            <ul>
+                @foreach (var error in response.Errors)
+                {
+                    <li>@(error)</li>
+                }
+            </ul>
+        </div>
+    }
+</form>
+
+@code {
+    private CustomerDto customer = new CustomerDto()
+        {
+            Id = 1,
+            DateOfBirth = DateTime.Now,
+        };
+
+    private BaseResponseObj<object> response;
+
+    private async void AddCustomer()
+    {
+        response = await customerService.AddCustomer(customer);
+
+        if (response.Success == false)
+        {
+            this.StateHasChanged();
+        }
+        else
+            NavigationManager.NavigateTo("customers");
+    }
+}
